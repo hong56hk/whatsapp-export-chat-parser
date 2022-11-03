@@ -1,0 +1,27 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "nodemon",
+          "type": "node",
+          "request": "launch",
+          "program": "index",
+          "console": "integratedTerminal",
+          "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/nodemon",
+          "runtimeArgs": [
+              "--inspect"
+          ],
+          "cwd": "${workspaceFolder}",
+      }, {
+          "type": "node",
+          "request": "attach",
+          "name": "Node: Nodemon",
+          "processId": "${command:PickProcess}",
+          "restart": true,
+          "protocol": "inspector"
+      }
+  ]
+}
