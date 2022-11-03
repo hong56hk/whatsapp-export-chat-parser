@@ -22,6 +22,13 @@ const MsgDiv = styled.div`
   padding-bottom: 10px;
 `;
 
+const Sticker = styled.img`
+  width: 190px;
+`
+
+const Photo = styled.img`
+  width: 330px;
+`
 
 const ChatComp = (props) => {
   let folderHandler = null;
@@ -30,14 +37,13 @@ const ChatComp = (props) => {
   const [msgArray, setMsgArray] = useState([]); // array of {time, sender, msg}
   
 
-  const parseChat = (chat) => {
+  const parseChat = async (chat) => {
     const attachmentPattern = /^\u200E\[([1-3]?[0-9]\/1?[0-9]\/[0-9]{4}, 1?[0-9]:[1-6]?[0-9]:[1-6]?[0-9] [AP]M)\] ([\w ]+): \u200E<attached: ([\w\-\.]+)>/;
     const pattern = /^\[([1-3]?[0-9]\/1?[0-9]\/[0-9]{4}, 1?[0-9]:[1-6]?[0-9]:[1-6]?[0-9] [AP]M)\] ([\w ]+): ([\w\W]+)/;
     
     const msgarr = [];
     const lines = chat.split("\r\n");
     for( const line of lines) {
-      console.log(line);
       const match = line.match(pattern);
       if (match) {
         msgarr.push({
@@ -51,17 +57,27 @@ const ChatComp = (props) => {
         if (match) {
           const attach = match[3];
           let attachType = null;
+          let url = null;
 
           if (attach.includes("PHOTO")) {
             attachType = "photo";
           } else if (attach.includes("STICKER")) {
             attachType = "sticker";
           }
+
+
+          if (attachType === "photo" || attachType === "sticker") {
+            const fileHandle = await folderHandler.getFileHandle(attach);
+            const file = await fileHandle.getFile(); 
+            const urlCreator = window.URL || window.webkitURL;
+            url = urlCreator.createObjectURL(file);
+          }
           msgarr.push({
             type: attachType,
             time: moment(match[1], 'D/M/YYYY, h:m:s a'),
             sender: match[2],
-            attachment: match[3],
+            name: match[3],
+            url: url,
           });
         } else {
           console.error(`cannot parse this line: ${line}`);
@@ -79,10 +95,9 @@ const ChatComp = (props) => {
     
     const fileHandle = await folderHandler.getFileHandle("_chat.txt");
     const txtFile = await fileHandle.getFile(); // API: https://developer.mozilla.org/en-US/docs/Web/API/File
-    console.log(txtFile);
     const chat = await txtFile.text();
-
-    setMsgArray(parseChat(chat));
+    const msgarr = await parseChat(chat);
+    setMsgArray(msgarr);
     
   }
 
@@ -103,7 +118,13 @@ const ChatComp = (props) => {
 
               {msg.type === "photo" &&
                 <div>
-                  <img href={msg.attachment} />
+                  <Photo src={msg.url} />
+                </div>
+              }
+
+              {msg.type === "sticker" &&
+                <div>
+                  <Sticker src={msg.url} />
                 </div>
               }
             </MsgDiv>
