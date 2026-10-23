@@ -20,7 +20,8 @@ Built with plain HTML, CSS, and JavaScript. No build step, package installation,
 2. Open `parser.html` directly in a desktop browser that supports folder selection, such as Chrome or Edge. Keep the accompanying `css`, `js`, and `statis` folders in place.
 3. Click **Select WhatsApp Folder** and choose your extracted WhatsApp chat export folder, as described below.
 
-No server or installation is needed. An internet connection is needed to load Chart.js from jsDelivr.
+No server or installation is needed.
+No Internet connection is required.
 
 ## Open a conversation
 
