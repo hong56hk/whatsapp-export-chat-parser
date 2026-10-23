@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WhatsApp Chat Viewer with Statistics</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+
+  <body>
+    <header>
+      <button id="pick">Select WhatsApp Folder</button>
+      <button id="swap">Swap left/right</button>
+    </header>
+
+    <div id="stats">
+      <div id="stats-summary">
+        <div id="totalMessages">Total messages: 0</div>
+        <div id="perSender"></div>
+        <div id="initiators"></div>
+      </div>
+
+      <div
+        id="date-range"
+        style="
+          margin-bottom: 20px;
+          display: flex;
+          gap: 10px;
+          align-items: center;
+        "
+      >
+        <label>Start: <input type="date" id="startDate" /></label>
+        <label>End: <input type="date" id="endDate" /></label>
+        <button id="showEarliest">Show earliest</button>
+        <button id="applyRange">Apply</button>
+      </div>
+
+      <div id="chart-container">
+        <canvas id="chart" width="800" height="300"></canvas>
+        <div id="loading" role="status" hidden>
+          <span class="loading-spinner" aria-hidden="true"></span>
+          Loading chat…
+        </div>
+      </div>
+      <canvas id="groupChart" width="800" height="300"></canvas>
+    </div>
+
+    <div id="chat"></div>
+    <div id="modal" onclick="closeModal()">
+      <img />
+    </div>
+
+    <script src="js/chart.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

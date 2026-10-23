@@ -1,0 +1,211 @@
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont;
+}
+
+/* Header */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  padding: 10px;
+  background: #075e54;
+  color: white;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Chart loading status */
+#chart-container {
+  position: relative;
+}
+
+#loading:not([hidden]) {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #075e54;
+  background: rgba(239, 234, 226, 0.9);
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(7, 94, 84, 0.2);
+  border-top-color: #075e54;
+  border-radius: 50%;
+  animation: loading-spin 0.8s linear infinite;
+}
+
+@keyframes loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner {
+    animation: none;
+  }
+}
+
+/* Stats & chart container */
+#stats {
+  position: relative;
+  padding: 20px;
+  max-width: 900px;
+  margin: 60px auto 20px auto;
+  background-color: white;
+}
+#chart {
+  background-color: white;
+}
+
+/* Chat container */
+#chat {
+  position: relative;
+  padding: 0 20px 20px 20px;
+  max-width: 900px;
+  margin: auto;
+  min-height: 100px;
+  overflow: hidden;
+}
+
+/* Fixed background texture */
+#chat::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("../statis/background.png");
+  background-repeat: repeat;
+  background-position: center;
+  z-index: -2;
+}
+
+/* Opacity overlay */
+#chat::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(239, 234, 226, 0.85);
+  z-index: -1;
+}
+
+/* Messages */
+.message {
+  max-width: 65%;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  clear: both;
+  white-space: pre-wrap;
+}
+
+.left {
+  background: white;
+  float: left;
+}
+
+.right {
+  background: #dcf8c6;
+  float: right;
+}
+
+.sender {
+  font-size: 0.75em;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.media {
+  max-height: 128px;
+  max-width: 100%;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Audio / video */
+audio,
+video {
+  width: 100%;
+  margin-top: 5px;
+}
+
+/* Image modal */
+#modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+#modal img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 8px;
+}
+
+.audio-bubble {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 8px 10px;
+  width: 280px;
+}
+
+.right .audio-bubble {
+  background: #dcf8c6;
+}
+
+.audio-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #25d366;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.audio-wave {
+  flex: 1;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+}
+
+.audio-bar {
+  width: 3px;
+  background: #999;
+  border-radius: 2px;
+}
+
+.audio-bar.active {
+  background: hwb(249 30% 0%);
+}
+
+.audio-time {
+  font-size: 0.7em;
+  color: #555;
+  margin-top: 2px;
+  text-align: right;
+}

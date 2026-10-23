@@ -1,70 +1,100 @@
-# Getting Started with Create React App
+# WhatsApp Export Chat Parser
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A browser-based viewer for exported WhatsApp conversations. Open a local export folder to browse messages and attachments, filter by date, and explore message statistics.
 
-## Available Scripts
+Built with plain HTML, CSS, and JavaScript. No build step, package installation, or backend is required. Charts use Chart.js loaded from a CDN.
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- Chat bubbles with sender names, timestamps, and a left/right swap button.
+- Inclusive start and end date filtering.
+- Total message counts and counts per sender.
+- Conversation group counts and initiator statistics, using a 30-minute gap threshold.
+- Daily message and conversation group charts; click a bar to jump to that date.
+- Lazy loading of images, videos, and audio, with full-size image previews.
+- Voice message playback and seeking, contact downloads, and document links.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Run locally
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. Download or clone this repository and extract it if downloaded as a ZIP.
+2. Open `parser.html` directly in a desktop browser that supports folder selection, such as Chrome or Edge. Keep the accompanying `css`, `js`, and `statis` folders in place.
+3. Click **Select WhatsApp Folder** and choose your extracted WhatsApp chat export folder, as described below.
 
-### `npm test`
+No server or installation is needed. An internet connection is needed to load Chart.js from jsDelivr.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Open a conversation
 
-### `npm run build`
+1. Export a WhatsApp chat, including media if you want to view attachments.
+2. Extract the export into a local folder. The chat text file must be named `_chat.txt`.
+3. Click **Select WhatsApp Folder** and select that extracted folder.
+4. Choose **Start** and **End** dates, then click **Apply** to update the chat and statistics.
+5. Use **Swap left/right** to reverse message alignment, or click a chart bar to scroll to a date.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**Show earliest** sets the start date to the earliest message date. Click **Apply** afterward to apply it; the end date is unchanged.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Example export folder:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```text
+my-chat/
+├── _chat.txt
+├── photo.jpg
+├── voice-message.opus
+└── media/
+    └── video.mp4
+```
 
-### `npm run eject`
+Files are indexed in the selected folder and one level of subfolders. Attachment filenames must match the names referenced in the chat. Duplicate filenames overwrite earlier entries in the file index.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Supported export format
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The parser expects bracketed message headers with day/month/four-digit-year dates and a sender followed by a colon:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```text
+[23/10/2026, 09:15:00] Alex: Hello!
+[23/10/2026, 9:16:00 AM] Sam: Hi Alex.
+This is a continuation of the same message.
+[23/10/2026, 09:17:00] Alex: <attached: photo.jpg>
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Times may use 12-hour AM/PM or 24-hour notation, with optional seconds. The comma after the date is optional. Lines without a matching header are appended to the previous message; lines before the first matching message are ignored. Left-to-right marks and narrow non-breaking spaces are normalized before parsing.
 
-## Learn More
+Other export layouts, including unbracketed headers and month-first dates, are not supported reliably.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+| Attachment type     | Extensions                                                | Behavior                                                              |
+| ------------------- | --------------------------------------------------------- | --------------------------------------------------------------------- |
+| Images and stickers | `jpg`, `jpeg`, `png`, `webp`                              | Inline preview; non-WebP images open in a larger overlay              |
+| Video               | `mp4`                                                     | Browser playback controls                                             |
+| Voice messages      | `opus`                                                    | Custom playback and seek controls                                     |
+| Contacts            | `vcf`                                                     | Download link                                                         |
+| Documents           | `pdf`, `doc`, `docx`, `xls`, `xlsx`, `ppt`, `pptx`, `txt` | Open a local object URL in a new tab; handling depends on the browser |
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Data handling
 
-### Code Splitting
+The application reads selected files locally through the browser's File System Access API. Its code does not upload the chat or attachments to a backend. Chart.js is fetched from an external CDN, and clicking links in messages opens external websites.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Message text is currently inserted as HTML without sanitization. Only open exports you trust; embedded HTML can affect the page or request external resources. Keep personal chat exports and media outside this repository when publishing it.
 
-### Analyzing the Bundle Size
+## Current limitations
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- Conversation grouping intends to start a new group after a gap greater than 30 minutes. The existing grouping helper reads dates as `dd/mm/yyyy`, while the parser stores them as `yyyy/mm/dd`; group and initiator statistics can therefore be inaccurate across dates.
+- Applying a range with no matching messages can raise an error during message alignment.
+- Left/right alignment is designed around the first two distinct senders; larger group chats may not align consistently.
+- Cancelling the folder picker, missing `_chat.txt`, and missing attachments do not have dedicated error handling.
+- Attachment messages render the first attachment reference. Captions and unsupported attachment types are not displayed.
+- Selecting another folder retains the current date inputs and sender alignment state. Reload the page to start fresh.
+- All message elements are rendered at once, so large exports may be slow even though media loads lazily.
 
-### Making a Progressive Web App
+These limitations describe the existing implementation; this cleanup preserves its behavior.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Project structure
 
-### Advanced Configuration
+```text
+parser.html           Page structure and script loading
+css/styles.css        Chat, charts, media controls, and modal styles
+js/main.js            File loading, parsing, filtering, statistics, and rendering
+statis/background.png Chat background image
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Edit the source files directly and refresh the browser to see changes. There is no package-managed development server or automated test suite.
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+For static hosting, serve the repository contents over HTTPS and open `/parser.html`; the project does not currently provide an `index.html` entry point.
